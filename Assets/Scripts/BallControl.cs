@@ -5,46 +5,41 @@ using UnityEngine;
 public class BallControl : MonoBehaviour
 {
     public float power = 5f;
+    
+    Vector3 originalPos;
 
-    public GameObject PointPrefab;
+    Rigidbody2D rigidbody2d;
 
-    public GameObject[] Points;
-
-    public int numberOfPoints;
-
-    Rigidbody2D rb;
-
-    LineRenderer lr;
+    LineRenderer linerenderer;
 
     Vector2 DragStartPos;
+    
+    new Transform transform;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        lr = GetComponent<LineRenderer>();
-
-        Points = new GameObject[numberOfPoints];
-        for(int i = 0; i < numberOfPoints; i++)
-        {
-            Points[i] = Instantiate(PointPrefab, transform.position, Quaternion.identity);
-        }
+        rigidbody2d = GetComponent<Rigidbody2D>();
+        linerenderer = GetComponent<LineRenderer>();
+        transform = GetComponent<Transform>();
+        originalPos = gameObject.transform.position;
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetButtonDown("Jump"))
         {
-            DragStartPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //DragStartPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            DragStartPos = (Vector2)gameObject.transform.position;
         }
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetButton("Jump"))
         {
             Vector2 DragEndPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 _velocity = (DragEndPos - DragStartPos) * power;
 
-            Vector2[] trajectory = Plot(rb, (Vector2)transform.position, _velocity, 500);
+            Vector2[] trajectory = Plot(rigidbody2d, (Vector2)transform.position, _velocity, 500);
             
-            lr.positionCount = trajectory.Length;
+            linerenderer.positionCount = trajectory.Length;
 
             Vector3[] positions = new Vector3[trajectory.Length];
             for(int i = 0; i < trajectory.Length; i++)
@@ -52,15 +47,23 @@ public class BallControl : MonoBehaviour
                 positions[i] = trajectory[i];
             }
 
-            lr.SetPositions(positions);
+            linerenderer.SetPositions(positions);
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetButtonUp("Jump"))
         {
+            linerenderer.positionCount = 0;
             Vector2 DragEndPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 _velocity = (DragEndPos - DragStartPos) * power;
-            rb.velocity = _velocity;
+            rigidbody2d.velocity = _velocity;
         }
+    }
+
+    private void OnGUI()
+    {
+        GUILayout.BeginArea(new Rect(20, 20, 250, 120));
+        GUILayout.Label("Mouse position: " + Input.mousePosition);
+        GUILayout.EndArea();
     }
 
     public Vector2[] Plot(Rigidbody2D rigidbody, Vector2 pos, Vector2 velocity, int steps)
@@ -82,5 +85,15 @@ public class BallControl : MonoBehaviour
         }
 
         return results;
+    }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        if(collider.gameObject.tag == "Hole")
+        {
+            Debug.Log("Kolizja!");
+            gameObject.transform.position = originalPos;
+            rigidbody2d.Sleep();
+        }
     }
 }
