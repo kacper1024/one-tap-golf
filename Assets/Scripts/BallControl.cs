@@ -5,6 +5,8 @@ using UnityEngine;
 public class BallControl : MonoBehaviour
 {
     public float power = 5f;
+
+    HoleControl hole;
     
     Vector3 originalPos;
 
@@ -16,12 +18,14 @@ public class BallControl : MonoBehaviour
     
     new Transform transform;
 
+
     private void Start()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
         linerenderer = GetComponent<LineRenderer>();
         transform = GetComponent<Transform>();
         originalPos = gameObject.transform.position;
+        hole = GameObject.Find("Hole").GetComponent<HoleControl>();
     }
 
     private void Update()
@@ -87,13 +91,14 @@ public class BallControl : MonoBehaviour
         return results;
     }
 
-    void OnTriggerEnter2D(Collider2D collider)
+    public void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider.gameObject.tag == "Hole")
         {
             Debug.Log("Kolizja!");
             gameObject.transform.position = originalPos;
             rigidbody2d.Sleep();
+            hole.RandomPosition();
         }
     }
 }
