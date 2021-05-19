@@ -16,7 +16,6 @@ public class HoleControl : MonoBehaviour
 
     public void RandomPosition()
     {
-        Random.InitState((int)System.DateTime.Now.Ticks);
         x = Random.Range(0, 8);
         pos = new Vector3(x, y, z);
         transform.position = pos;
