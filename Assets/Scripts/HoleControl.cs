@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class HoleControl : MonoBehaviour
 {
-    float x;
     float y = -4.125f;
-    float z = 0;
-    Vector3 pos;
+    Vector2 pos;
+    public int[] bufferRand = new int[] { 0, 0 };
 
     void Start()
     {
@@ -16,8 +13,18 @@ public class HoleControl : MonoBehaviour
 
     public void RandomPosition()
     {
-        x = Random.Range(0, 8);
-        pos = new Vector3(x, y, z);
+        while(true)
+        {
+            bufferRand[0] = Random.Range(0, 8);
+            if (bufferRand[0] == bufferRand[1])
+            {
+                continue;
+            }
+            else
+                break;
+        }
+        
+        pos = new Vector2(bufferRand[0], y);
         transform.position = pos;
     }
 }
