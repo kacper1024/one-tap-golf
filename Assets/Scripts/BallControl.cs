@@ -4,46 +4,46 @@ using UnityEngine;
 
 public class BallControl : MonoBehaviour
 {
-    public float power = 5f;
+    private float power = 5f;
+    private float originalXPos = -5.8f;
+    private float xPosPerSecond = 0.5f;
+    private bool disableKey;
 
-    HoleControl hole;
-    
-    Vector3 originalPos;
+    Vector3 OriginalPos;
+    Vector2 DragStartPos;
+    Vector2 Vec2;
 
     Rigidbody2D rigidbody2d;
-
-    LineRenderer linerenderer;
-
-    Vector2 DragStartPos;
-    
-    new Transform transform;
-
+    LineRenderer lineRenderer;
+    HoleControl hole;
 
     private void Start()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
-        linerenderer = GetComponent<LineRenderer>();
-        transform = GetComponent<Transform>();
-        originalPos = gameObject.transform.position;
+        lineRenderer = GetComponent<LineRenderer>();
+        OriginalPos = gameObject.transform.position;
         hole = GameObject.Find("Hole").GetComponent<HoleControl>();
+        disableKey = false;
+        //Vec2 = new Vector2(-5.8f, -2.3f);
     }
 
     private void Update()
     {
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump") && disableKey == false)
         {
             //DragStartPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             DragStartPos = (Vector2)gameObject.transform.position;
         }
 
-        if (Input.GetButton("Jump"))
+        if (Input.GetButton("Jump") && disableKey == false)
         {
-            Vector2 DragEndPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //Vector2 DragEndPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 DragEndPos = new Vector2(originalXPos += xPosPerSecond * Time.deltaTime, -2.3f);
             Vector2 _velocity = (DragEndPos - DragStartPos) * power;
 
             Vector2[] trajectory = Plot(rigidbody2d, (Vector2)transform.position, _velocity, 500);
             
-            linerenderer.positionCount = trajectory.Length;
+            lineRenderer.positionCount = trajectory.Length;
 
             Vector3[] positions = new Vector3[trajectory.Length];
             for(int i = 0; i < trajectory.Length; i++)
@@ -51,13 +51,15 @@ public class BallControl : MonoBehaviour
                 positions[i] = trajectory[i];
             }
 
-            linerenderer.SetPositions(positions);
+            lineRenderer.SetPositions(positions);
         }
 
-        if (Input.GetButtonUp("Jump"))
+        if (Input.GetButtonUp("Jump") && disableKey == false)
         {
-            linerenderer.positionCount = 0;
-            Vector2 DragEndPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            disableKey = true;
+            lineRenderer.positionCount = 0;
+            //Vector2 DragEndPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 DragEndPos = new Vector2(originalXPos += xPosPerSecond * Time.deltaTime, -2.3f);
             Vector2 _velocity = (DragEndPos - DragStartPos) * power;
             rigidbody2d.velocity = _velocity;
         }
@@ -96,9 +98,11 @@ public class BallControl : MonoBehaviour
         if(collider.gameObject.tag == "Hole")
         {
             Debug.Log("Kolizja!");
-            gameObject.transform.position = originalPos;
+            gameObject.transform.position = OriginalPos;
             rigidbody2d.Sleep();
             hole.RandomPosition();
+            disableKey = false;
+            originalXPos = -5.8f;
         }
     }
 }
