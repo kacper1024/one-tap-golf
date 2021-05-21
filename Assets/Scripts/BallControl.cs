@@ -83,7 +83,7 @@ public class BallControl : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D collider)
     {
-        if(collider.gameObject.tag == "Hole")
+        if (collider.gameObject.tag == "Hole")
         {
             Debug.Log("Kolizja!");
             score += 1;
@@ -91,8 +91,9 @@ public class BallControl : MonoBehaviour
             gameObject.transform.position = OriginalPos;
             rigidbody2d.Sleep();
             hole.RandomPosition();
-            disableKey = false;
+            xPosPerSecond += 0.1f;
             endPosX = -5.8f;
+            disableKey = false;
         }
     }
 }
