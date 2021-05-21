@@ -8,6 +8,7 @@ public class BallControl : MonoBehaviour
     private float xPosPerSecond = 0.5f;
     public bool disableKey;
     public int score = 0;
+    public int timeRemaining = 3;
 
     Vector3 OriginalPos;
     Vector2 DragStartPos;
@@ -35,7 +36,7 @@ public class BallControl : MonoBehaviour
         if (Input.GetButton("Jump") && disableKey == false)
         {
             Vector2 DragEndPos = new Vector2(endPosX += xPosPerSecond * Time.deltaTime, endPosY);
-            if(endPosX>-3.6f)
+            if(endPosX > -3.6f)
             {
                 disableKey = true;
                 lineRenderer.positionCount = 0;
@@ -99,7 +100,7 @@ public class BallControl : MonoBehaviour
     {
         if (collider.gameObject.tag == "Hole")
         {
-            Debug.Log("Kolizja!");
+            Debug.Log("Trafiony!");
             score += 1;
             hole.bufferRand[1] = hole.bufferRand[0];
             gameObject.transform.position = OriginalPos;
@@ -116,26 +117,24 @@ public class BallControl : MonoBehaviour
         if ((gameObject.transform.position.y <= -3.4f && gameObject.transform.position.y >= -3.5f) &&
             (gameObject.transform.position.x >= -5.5f && gameObject.transform.position.x < hole.transform.position.x))
         {
-            Debug.Log("Ziemia");
-            gameObject.transform.position = OriginalPos;
-            rigidbody2d.Sleep();
-            hole.RandomPosition();
-            endPosX = -5.8f;
-            score = 0;
-            xPosPerSecond = 0.5f;
-            disableKey = false;
+            GameOver();
         }
         if((gameObject.transform.position.y <= -3.4f && gameObject.transform.position.y >= -3.5f) &&
             (gameObject.transform.position.x > hole.transform.position.x && gameObject.transform.position.x <= 11f))
         {
-            Debug.Log("Ziemia");
-            gameObject.transform.position = OriginalPos;
-            rigidbody2d.Sleep();
-            hole.RandomPosition();
-            endPosX = -5.8f;
-            score = 0;
-            xPosPerSecond = 0.5f;
-            disableKey = false;
+            GameOver();
         }
+    }
+
+    private void GameOver()
+    {
+        Debug.Log("Pudło!");
+        gameObject.transform.position = OriginalPos;
+        rigidbody2d.Sleep();
+        hole.RandomPosition();
+        endPosX = -5.8f;
+        score = 0;
+        xPosPerSecond = 0.5f;
+        disableKey = false;
     }
 }
