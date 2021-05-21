@@ -1212,7 +1212,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 735e41aa59d1dc2428cba848f82db843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disableKey: 0
   score: 0
+  timeRemaining: 5
+  timerIsRunning: 0
 --- !u!120 &1531239852
 LineRenderer:
   m_ObjectHideFlags: 0

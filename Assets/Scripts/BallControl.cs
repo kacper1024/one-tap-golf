@@ -6,7 +6,7 @@ public class BallControl : MonoBehaviour
     private float endPosX = -5.8f;
     private float endPosY = -2.3f;
     private float xPosPerSecond = 0.5f;
-    private bool disableKey;
+    public bool disableKey;
     public int score = 0;
 
     Vector3 OriginalPos;
@@ -16,7 +16,7 @@ public class BallControl : MonoBehaviour
     LineRenderer lineRenderer;
     HoleControl hole;
 
-    private void Start()
+    void Start()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
         lineRenderer = GetComponent<LineRenderer>();
@@ -25,7 +25,7 @@ public class BallControl : MonoBehaviour
         disableKey = false;
     }
 
-    private void Update()
+    void Update()
     {
         if (Input.GetButtonDown("Jump") && disableKey == false)
         {
@@ -35,19 +35,31 @@ public class BallControl : MonoBehaviour
         if (Input.GetButton("Jump") && disableKey == false)
         {
             Vector2 DragEndPos = new Vector2(endPosX += xPosPerSecond * Time.deltaTime, endPosY);
-            Vector2 _velocity = (DragEndPos - DragStartPos) * power;
-
-            Vector2[] trajectory = Plot(rigidbody2d, (Vector2)transform.position, _velocity, 500);
-            
-            lineRenderer.positionCount = trajectory.Length;
-
-            Vector3[] positions = new Vector3[trajectory.Length];
-            for(int i = 0; i < trajectory.Length; i++)
+            if(endPosX>-3.6f)
             {
-                positions[i] = trajectory[i];
+                disableKey = true;
+                lineRenderer.positionCount = 0;
+                DragEndPos = new Vector2(endPosX += xPosPerSecond * Time.deltaTime, endPosY);
+                Vector2 _velocity2 = (DragEndPos - DragStartPos) * power;
+                rigidbody2d.velocity = _velocity2;
             }
+            else
+            {
+                Vector2 _velocity = (DragEndPos - DragStartPos) * power;
 
-            lineRenderer.SetPositions(positions);
+                Vector2[] trajectory = Plot(rigidbody2d, (Vector2)transform.position, _velocity, 500);
+
+                lineRenderer.positionCount = trajectory.Length;
+
+                Vector3[] positions = new Vector3[trajectory.Length];
+                for (int i = 0; i < trajectory.Length; i++)
+                {
+                    positions[i] = trajectory[i];
+                }
+
+                lineRenderer.SetPositions(positions);
+            }
+            
         }
 
         if (Input.GetButtonUp("Jump") && disableKey == false)
@@ -58,6 +70,8 @@ public class BallControl : MonoBehaviour
             Vector2 _velocity = (DragEndPos - DragStartPos) * power;
             rigidbody2d.velocity = _velocity;
         }
+
+        Mishit();
     }
 
     public Vector2[] Plot(Rigidbody2D rigidbody, Vector2 pos, Vector2 velocity, int steps)
@@ -93,6 +107,34 @@ public class BallControl : MonoBehaviour
             hole.RandomPosition();
             xPosPerSecond += 0.1f;
             endPosX = -5.8f;
+            disableKey = false;
+        }
+    }
+
+    private void Mishit()
+    {
+        if ((gameObject.transform.position.y <= -3.4f && gameObject.transform.position.y >= -3.5f) &&
+            (gameObject.transform.position.x >= -5.5f && gameObject.transform.position.x < hole.transform.position.x))
+        {
+            Debug.Log("Ziemia");
+            gameObject.transform.position = OriginalPos;
+            rigidbody2d.Sleep();
+            hole.RandomPosition();
+            endPosX = -5.8f;
+            score = 0;
+            xPosPerSecond = 0.5f;
+            disableKey = false;
+        }
+        if((gameObject.transform.position.y <= -3.4f && gameObject.transform.position.y >= -3.5f) &&
+            (gameObject.transform.position.x > hole.transform.position.x && gameObject.transform.position.x <= 11f))
+        {
+            Debug.Log("Ziemia");
+            gameObject.transform.position = OriginalPos;
+            rigidbody2d.Sleep();
+            hole.RandomPosition();
+            endPosX = -5.8f;
+            score = 0;
+            xPosPerSecond = 0.5f;
             disableKey = false;
         }
     }
