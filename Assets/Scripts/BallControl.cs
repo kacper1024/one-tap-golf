@@ -3,12 +3,17 @@
 public class BallControl : MonoBehaviour
 {
     private float power = 5f;
+
     private float endPosX = -5.8f;
     private float endPosY = -2.3f;
     private float xPosPerSecond = 0.5f;
-    public bool disableKey;
+    
     public int score = 0;
-    public int timeRemaining = 3;
+    
+    public bool timeStart = false;
+    public float timeRemaining = 3.0f;
+
+    public bool disableKey;
 
     Vector3 OriginalPos;
     Vector2 DragStartPos;
@@ -21,8 +26,8 @@ public class BallControl : MonoBehaviour
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
         lineRenderer = GetComponent<LineRenderer>();
-        OriginalPos = gameObject.transform.position;
         hole = GameObject.Find("Hole").GetComponent<HoleControl>();
+        OriginalPos = gameObject.transform.position;
         disableKey = false;
     }
 
@@ -35,44 +40,20 @@ public class BallControl : MonoBehaviour
 
         if (Input.GetButton("Jump") && disableKey == false)
         {
-            Vector2 DragEndPos = new Vector2(endPosX += xPosPerSecond * Time.deltaTime, endPosY);
-            if(endPosX > -3.6f)
-            {
-                disableKey = true;
-                lineRenderer.positionCount = 0;
-                DragEndPos = new Vector2(endPosX += xPosPerSecond * Time.deltaTime, endPosY);
-                Vector2 _velocity2 = (DragEndPos - DragStartPos) * power;
-                rigidbody2d.velocity = _velocity2;
-            }
-            else
-            {
-                Vector2 _velocity = (DragEndPos - DragStartPos) * power;
-
-                Vector2[] trajectory = Plot(rigidbody2d, (Vector2)transform.position, _velocity, 500);
-
-                lineRenderer.positionCount = trajectory.Length;
-
-                Vector3[] positions = new Vector3[trajectory.Length];
-                for (int i = 0; i < trajectory.Length; i++)
-                {
-                    positions[i] = trajectory[i];
-                }
-
-                lineRenderer.SetPositions(positions);
-            }
-            
+            SetParabola();
         }
 
         if (Input.GetButtonUp("Jump") && disableKey == false)
         {
-            disableKey = true;
-            lineRenderer.positionCount = 0;
-            Vector2 DragEndPos = new Vector2(endPosX += xPosPerSecond * Time.deltaTime, endPosY);
-            Vector2 _velocity = (DragEndPos - DragStartPos) * power;
-            rigidbody2d.velocity = _velocity;
+            Fire();
         }
 
         Mishit();
+
+        if(timeStart == true)
+        {
+            timeRemaining -= Time.deltaTime;
+        }
     }
 
     public Vector2[] Plot(Rigidbody2D rigidbody, Vector2 pos, Vector2 velocity, int steps)
@@ -96,19 +77,38 @@ public class BallControl : MonoBehaviour
         return results;
     }
 
+    private void SetParabola()
+    {
+        Vector2 DragEndPos = new Vector2(endPosX += xPosPerSecond * Time.deltaTime, endPosY);
+        if (endPosX > -3.6f)
+        {
+            Fire();
+        }
+        else
+        {
+            Vector2 _velocity = (DragEndPos - DragStartPos) * power;
+
+            Vector2[] trajectory = Plot(rigidbody2d, (Vector2)transform.position, _velocity, 500);
+
+            lineRenderer.positionCount = trajectory.Length;
+
+            Vector3[] positions = new Vector3[trajectory.Length];
+            for (int i = 0; i < trajectory.Length; i++)
+            {
+                positions[i] = trajectory[i];
+            }
+
+            lineRenderer.SetPositions(positions);
+        }
+    }
     public void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.gameObject.tag == "Hole")
         {
             Debug.Log("Trafiony!");
             score += 1;
-            hole.bufferRand[1] = hole.bufferRand[0];
-            gameObject.transform.position = OriginalPos;
-            rigidbody2d.Sleep();
-            hole.RandomPosition();
-            xPosPerSecond += 0.1f;
-            endPosX = -5.8f;
-            disableKey = false;
+            ResetTime();
+            NextRound();
         }
     }
 
@@ -117,7 +117,12 @@ public class BallControl : MonoBehaviour
         if ((gameObject.transform.position.y <= -3.4f && gameObject.transform.position.y >= -3.5f) &&
             (gameObject.transform.position.x >= -5.5f && gameObject.transform.position.x < hole.transform.position.x))
         {
-            GameOver();
+            timeStart = true;
+            if(timeRemaining < 0)
+            {
+                GameOver();
+                ResetTime();
+            }
         }
         if((gameObject.transform.position.y <= -3.4f && gameObject.transform.position.y >= -3.5f) &&
             (gameObject.transform.position.x > hole.transform.position.x && gameObject.transform.position.x <= 11f))
@@ -132,9 +137,40 @@ public class BallControl : MonoBehaviour
         gameObject.transform.position = OriginalPos;
         rigidbody2d.Sleep();
         hole.RandomPosition();
+        ResetGame();
+    }
+
+    private void ResetGame()
+    {
         endPosX = -5.8f;
-        score = 0;
         xPosPerSecond = 0.5f;
+        score = 0;
         disableKey = false;
+    }
+
+    private void ResetTime()
+    {
+        timeStart = false;
+        timeRemaining = 3;
+    }
+
+    private void Fire()
+    {
+        disableKey = true;
+        lineRenderer.positionCount = 0;
+        Vector2 DragEndPos = new Vector2(endPosX += xPosPerSecond * Time.deltaTime, endPosY);
+        Vector2 _velocity = (DragEndPos - DragStartPos) * power;
+        rigidbody2d.velocity = _velocity;
+    }
+    private void NextRound()
+    {
+        xPosPerSecond += 0.1f;
+        endPosX = -5.8f;
+        disableKey = false;
+        gameObject.transform.position = OriginalPos;
+        rigidbody2d.Sleep();
+        hole.bufferRand[1] = hole.bufferRand[0];
+        hole.RandomPosition();
+        
     }
 }

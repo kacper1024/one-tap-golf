@@ -2,8 +2,7 @@
 
 public class HoleControl : MonoBehaviour
 {
-    float y = -4.125f;
-    Vector2 pos;
+    const float y = -4.125f;
     public int[] bufferRand = new int[] { 0, 0 };
 
     void Start()
@@ -23,8 +22,7 @@ public class HoleControl : MonoBehaviour
             else
                 break;
         }
-        
-        pos = new Vector2(bufferRand[0], y);
-        transform.position = pos;
+
+        transform.position = new Vector2(bufferRand[0], y);
     }
 }
