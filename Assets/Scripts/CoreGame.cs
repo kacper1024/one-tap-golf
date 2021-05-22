@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class BallControl : MonoBehaviour
+public class CoreGame : MonoBehaviour
 {
     private float power = 5f;
 
@@ -119,17 +119,20 @@ public class BallControl : MonoBehaviour
         if ((gameObject.transform.position.y <= -3.4f && gameObject.transform.position.y >= -3.5f) &&
             (gameObject.transform.position.x >= -5.5f && gameObject.transform.position.x < hole.transform.position.x))
         {
-            timeStart = true;
-            if(timeRemaining < 0)
+            if(gameOverScreen.isGameOver == false)
             {
-                GameOver();
-                ResetTime();
+                timeStart = true;
+                if (timeRemaining < 0)
+                {
+                    GameOver();
+                    ResetTime();
+                }
             }
         }
         if((gameObject.transform.position.y <= -3.4f && gameObject.transform.position.y >= -3.5f) &&
             (gameObject.transform.position.x > hole.transform.position.x && gameObject.transform.position.x <= 11f))
         {
-            if(gameOverScreen.isGameOver==false)
+            if(gameOverScreen.isGameOver == false)
                 GameOver();
         }
     }

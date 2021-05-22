@@ -3,10 +3,10 @@ using UnityEngine.UI;
 
 public class Score : MonoBehaviour
 {
-    public BallControl ball;
+    public CoreGame game;
     public Text scoreText;
     void Update()
     {
-        scoreText.text = ball.score.ToString();
+        scoreText.text = game.score.ToString();
     }
 }

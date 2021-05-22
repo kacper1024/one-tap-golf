@@ -13,6 +13,7 @@ public class GameOver : MonoBehaviour
 
     public void GameOverScreenDisappear()
     {
+        GameOverScore.text = "Score: ";
         isGameOver = false;
         Restart.gameObject.SetActive(false);
         GameOverText.gameObject.SetActive(false);
