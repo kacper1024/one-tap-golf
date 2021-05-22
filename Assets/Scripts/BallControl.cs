@@ -21,12 +21,14 @@ public class BallControl : MonoBehaviour
     Rigidbody2D rigidbody2d;
     LineRenderer lineRenderer;
     HoleControl hole;
+    GameOver gameOverScreen;
 
     void Start()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
         lineRenderer = GetComponent<LineRenderer>();
         hole = GameObject.Find("Hole").GetComponent<HoleControl>();
+        gameOverScreen = GameObject.Find("GameOverScreen").GetComponent<GameOver>();
         OriginalPos = gameObject.transform.position;
         disableKey = false;
     }
@@ -56,7 +58,7 @@ public class BallControl : MonoBehaviour
         }
     }
 
-    public Vector2[] Plot(Rigidbody2D rigidbody, Vector2 pos, Vector2 velocity, int steps)
+    private Vector2[] Plot(Rigidbody2D rigidbody, Vector2 pos, Vector2 velocity, int steps)
     {
         Vector2[] results = new Vector2[steps];
 
@@ -101,7 +103,7 @@ public class BallControl : MonoBehaviour
             lineRenderer.SetPositions(positions);
         }
     }
-    public void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.gameObject.tag == "Hole")
         {
@@ -127,31 +129,21 @@ public class BallControl : MonoBehaviour
         if((gameObject.transform.position.y <= -3.4f && gameObject.transform.position.y >= -3.5f) &&
             (gameObject.transform.position.x > hole.transform.position.x && gameObject.transform.position.x <= 11f))
         {
-            GameOver();
+            if(gameOverScreen.isGameOver==false)
+                GameOver();
         }
     }
 
     private void GameOver()
     {
-        Debug.Log("Pudło!");
-        gameObject.transform.position = OriginalPos;
-        rigidbody2d.Sleep();
-        hole.RandomPosition();
-        ResetGame();
-    }
-
-    private void ResetGame()
-    {
-        endPosX = -5.8f;
-        xPosPerSecond = 0.5f;
-        score = 0;
-        disableKey = false;
+        Debug.Log("Koniec gry!");
+        gameOverScreen.GameOverScreenAppear();
     }
 
     private void ResetTime()
     {
         timeStart = false;
-        timeRemaining = 3;
+        timeRemaining = 3.0f;
     }
 
     private void Fire()
@@ -171,6 +163,5 @@ public class BallControl : MonoBehaviour
         rigidbody2d.Sleep();
         hole.bufferRand[1] = hole.bufferRand[0];
         hole.RandomPosition();
-        
     }
 }
