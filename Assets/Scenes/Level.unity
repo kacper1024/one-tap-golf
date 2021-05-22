@@ -828,6 +828,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   game: {fileID: 1531239851}
   scoreText: {fileID: 609704958}
+  highScore: {fileID: 515553736}
 --- !u!1 &681371201
 GameObject:
   m_ObjectHideFlags: 0
@@ -1265,6 +1266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 249869eb4661650448dd45c1f0d737c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  game: {fileID: 1531239851}
   score: {fileID: 609704960}
   Restart: {fileID: 2023651284}
   GameOverText: {fileID: 1742520233}
@@ -1498,6 +1500,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   score: 0
+  bestScore: 0
   timeStart: 0
   timeRemaining: 3
   disableKey: 0

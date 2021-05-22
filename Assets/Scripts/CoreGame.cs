@@ -9,6 +9,7 @@ public class CoreGame : MonoBehaviour
     private float xPosPerSecond = 0.5f;
     
     public int score = 0;
+    public int bestScore = 0;
     
     public bool timeStart = false;
     public float timeRemaining = 3.0f;
@@ -139,6 +140,8 @@ public class CoreGame : MonoBehaviour
 
     private void GameOver()
     {
+        if (score > bestScore)
+            bestScore = score;
         Debug.Log("Koniec gry!");
         gameOverScreen.GameOverScreenAppear();
     }
@@ -166,5 +169,14 @@ public class CoreGame : MonoBehaviour
         rigidbody2d.Sleep();
         hole.bufferRand[1] = hole.bufferRand[0];
         hole.RandomPosition();
+    }
+    public void ResetGame()
+    {
+        gameObject.transform.position = OriginalPos;
+        hole.RandomPosition();
+        endPosX = -5.8f;
+        score = 0;
+        xPosPerSecond = 0.5f;
+        disableKey = false;
     }
 }

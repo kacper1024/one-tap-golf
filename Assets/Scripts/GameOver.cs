@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class GameOver : MonoBehaviour
 {
+    public CoreGame game;
     public Score score;
     public Button Restart;
     public Text GameOverText;
@@ -14,17 +15,19 @@ public class GameOver : MonoBehaviour
     public void GameOverScreenDisappear()
     {
         GameOverScore.text = "Score: ";
+        GameOverBest.text = "Best: ";
         isGameOver = false;
         Restart.gameObject.SetActive(false);
         GameOverText.gameObject.SetActive(false);
         GameOverScore.gameObject.SetActive(false);
         GameOverBest.gameObject.SetActive(false);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        game.ResetGame();
     }
 
     public void GameOverScreenAppear()
     {
         GameOverScore.text += score.scoreText.text;
+        GameOverBest.text += game.bestScore.ToString();
         isGameOver = true;
         Restart.gameObject.SetActive(true);
         GameOverText.gameObject.SetActive(true);
