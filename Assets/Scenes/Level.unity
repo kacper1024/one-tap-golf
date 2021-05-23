@@ -468,7 +468,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.93, y: 0.7}
+  m_Size: {x: 0.9, y: 0.68}
   m_EdgeRadius: 0
 --- !u!114 &481672317
 MonoBehaviour:
@@ -1248,7 +1248,7 @@ GameObject:
   - component: {fileID: 1426176251}
   - component: {fileID: 1426176250}
   m_Layer: 0
-  m_Name: GameOverScreen
+  m_Name: GameOver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

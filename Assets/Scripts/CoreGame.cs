@@ -29,7 +29,7 @@ public class CoreGame : MonoBehaviour
         rigidbody2d = GetComponent<Rigidbody2D>();
         lineRenderer = GetComponent<LineRenderer>();
         hole = GameObject.Find("Hole").GetComponent<HoleControl>();
-        gameOverScreen = GameObject.Find("GameOverScreen").GetComponent<GameOver>();
+        gameOverScreen = GameObject.Find("GameOver").GetComponent<GameOver>();
         OriginalPos = gameObject.transform.position;
         disableKey = false;
     }
@@ -125,6 +125,7 @@ public class CoreGame : MonoBehaviour
                 timeStart = true;
                 if (timeRemaining < 0)
                 {
+                    disableKey = true;
                     GameOver();
                     ResetTime();
                 }
@@ -134,7 +135,10 @@ public class CoreGame : MonoBehaviour
             (gameObject.transform.position.x > hole.transform.position.x && gameObject.transform.position.x <= 11f))
         {
             if(gameOverScreen.isGameOver == false)
+            {
+                disableKey = true;
                 GameOver();
+            }
         }
     }
 
@@ -174,6 +178,7 @@ public class CoreGame : MonoBehaviour
     {
         gameObject.transform.position = OriginalPos;
         hole.RandomPosition();
+        rigidbody2d.Sleep();
         endPosX = -5.8f;
         score = 0;
         xPosPerSecond = 0.5f;
